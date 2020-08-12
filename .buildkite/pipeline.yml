@@ -2,7 +2,7 @@ steps:
   # TODO: @craige fix this
   - label: 'stack coveralls coverage'
     command:
-      - 'nix-shell -A runCoveralls'
+      - '${nix-shell -A runCoveralls}/bin/runCoveralls.sh'
     agents:
       system: x86_64-linux
 
