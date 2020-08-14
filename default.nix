@@ -29,7 +29,8 @@ let
       ${commonLib.hpc-coveralls}/bin/hpc-coveralls all \
         ${concatStringsSep "\n  " (mapAttrsToList (_: p: "--package-dir .${p.src.origSubDir} \\") projectPkgs)}
         --hpc-dir ${projectCoverageReport}/share/hpc \
-        --coverage-mode StrictlyFullLines
+        --coverage-mode StrictlyFullLines \
+        --repo-token=$COVERALLS_REPO_TOKEN
     '';
 
   self = {
