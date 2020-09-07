@@ -23,12 +23,12 @@ let
 
   runCoverallsScript = pkgSet:
     let
-      projectPkgs = selectProjectPackages pkgSet;
+      projectPkgs = selectProjectPackages pkgSet.hsPkgs;
       projectCoverageReport = pkgSet.projectCoverageReport;
     in writeShellScriptBin "runCoveralls.sh" ''
       ${commonLib.hpc-coveralls}/bin/hpc-coveralls all \
         ${concatStringsSep "\n  " (mapAttrsToList (_: p: "--package-dir .${p.src.origSubDir} \\") projectPkgs)}
-        --hpc-dir ${projectCoverageReport}/share/hpc \
+        --hpc-dir ${projectCoverageReport}/share/hpc/vanilla \
         --coverage-mode StrictlyFullLines \
         --repo-token=$COVERALLS_REPO_TOKEN
     '';
@@ -54,7 +54,13 @@ let
       tests = collectChecks haskellPackages;
     };
 
-    runCoveralls = runCoverallsScript cardanoShellHaskellPackages;
+    runCoveralls = runCoverallsScript (cardanoShellHaskellPackages.overrideModules (oldModules: oldModules ++ [{
+      packages.cardano-launcher.components.library.doCoverage = true;
+      packages.cardano-launcher.components.tests.cardano-launcher-test.doCoverage = true;
+
+      packages.cardano-shell.components.library.doCoverage = true;
+      packages.cardano-shell.components.tests.cardano-shell-test.doCoverage = true;
+    }]));
 
     shell = import ./shell.nix {
       inherit pkgs;
