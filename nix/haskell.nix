@@ -25,6 +25,7 @@ let
     ghc = buildPackages.haskell-nix.compiler.${compiler};
   } // {
     inherit src;
+    compiler-nix-name = compiler;
     modules = [
       { compiler.nix-name = compiler; }
 
