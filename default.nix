@@ -23,7 +23,7 @@ let
 
   runCoverallsScript = pkgSet:
     let
-      projectPkgs = selectProjectPackages pkgSet.hsPkgs;
+      projectPkgs = selectProjectPackages pkgSet;
       projectCoverageReport = pkgSet.projectCoverageReport;
     in writeShellScriptBin "runCoveralls.sh" ''
       ${commonLib.hpc-coveralls}/bin/hpc-coveralls all \
@@ -54,17 +54,11 @@ let
       tests = collectChecks haskellPackages;
     };
 
-    runCoveralls = runCoverallsScript (cardanoShellHaskellPackages.overrideModules (oldModules: oldModules ++ [{
-      packages.cardano-launcher.components.library.doCoverage = true;
-      packages.cardano-launcher.components.tests.cardano-launcher-test.doCoverage = true;
-
-      packages.cardano-shell.components.library.doCoverage = true;
-      packages.cardano-shell.components.tests.cardano-shell-test.doCoverage = true;
-    }]));
+    runCoveralls = runCoverallsScript cardanoShellHaskellPackages;
 
     shell = import ./shell.nix {
       inherit pkgs;
       withHoogle = true;
     };
-};
+  };
 in self
